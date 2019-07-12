@@ -144,6 +144,8 @@ public class CppLibraryPlugin implements Plugin<Project> {
                         } catch (GradleException e) {}
 
                         if (result != null) {
+                            System.out.println(String.format("using %s to build: %s", result.getToolChain().getDisplayName(), variantIdentity.getName()));
+
                             //ToolChainSelector.Result<CppPlatform> result = toolChainSelector.select(CppPlatform.class, new DefaultCppPlatform(variantIdentity.getTargetMachine()));
 
                             if (variantIdentity.getLinkage().equals(Linkage.SHARED)) {
