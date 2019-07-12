@@ -51,7 +51,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
-import static org.gradle.language.nativeplatform.internal.Dimensions.tryToBuildOnHost;
 import static org.gradle.language.nativeplatform.internal.Dimensions.useHostAsDefaultTargetMachine;
 
 /**
