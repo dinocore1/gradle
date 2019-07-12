@@ -16,6 +16,7 @@
 
 package org.gradle.language.cpp.plugins;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Incubating;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -137,8 +138,14 @@ public class CppLibraryPlugin implements Plugin<Project> {
             Dimensions.libraryVariants(library.getBaseName(), library.getLinkage(), library.getTargetMachines(), objectFactory, attributesFactory,
                     providers.provider(() -> project.getGroup().toString()), providers.provider(() -> project.getVersion().toString()),
                     variantIdentity -> {
-                        if (tryToBuildOnHost(variantIdentity)) {
-                            ToolChainSelector.Result<CppPlatform> result = toolChainSelector.select(CppPlatform.class, new DefaultCppPlatform(variantIdentity.getTargetMachine()));
+
+                        ToolChainSelector.Result<CppPlatform> result = null;
+                        try {
+                            result = toolChainSelector.select(CppPlatform.class, new DefaultCppPlatform(variantIdentity.getTargetMachine()));
+                        } catch (GradleException e) {}
+
+                        if (result != null) {
+                            //ToolChainSelector.Result<CppPlatform> result = toolChainSelector.select(CppPlatform.class, new DefaultCppPlatform(variantIdentity.getTargetMachine()));
 
                             if (variantIdentity.getLinkage().equals(Linkage.SHARED)) {
                                 library.addSharedLibrary(variantIdentity, result.getTargetPlatform(), result.getToolChain(), result.getPlatformToolProvider());

@@ -58,6 +58,7 @@ import org.gradle.nativeplatform.toolchain.internal.tools.ToolSearchPath;
 import org.gradle.platform.base.internal.toolchain.ComponentNotFound;
 import org.gradle.platform.base.internal.toolchain.SearchResult;
 import org.gradle.process.internal.ExecActionFactory;
+import org.gradle.util.VersionNumber;
 
 import java.util.Collections;
 import java.util.List;
@@ -114,10 +115,20 @@ class GccPlatformToolProvider extends AbstractPlatformToolProvider {
 
     private <T extends BinaryToolSpec> VersionAwareCompiler<T> versionAwareCompiler(Compiler<T> compiler, ToolType toolType) {
         SearchResult<GccMetadata> gccMetadata = getGccMetadata(toolType);
+
+        GccMetadata component = gccMetadata.getComponent();
+        String vendor = "unknown";
+        VersionNumber version = new VersionNumber(0, 0, 0, null);
+        if(component != null) {
+            vendor = component.getVendor();
+            version = component.getVersion();
+        }
+
+
         return new VersionAwareCompiler<T>(compiler, new DefaultCompilerVersion(
             metadataProvider.getCompilerType().getIdentifier(),
-            gccMetadata.getComponent().getVendor(),
-            gccMetadata.getComponent().getVersion())
+            vendor,
+            version)
         );
     }
 
