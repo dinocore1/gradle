@@ -30,6 +30,7 @@ import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
+import org.gradle.internal.logging.text.TreeFormatter;
 import org.gradle.language.cpp.CppBinary;
 import org.gradle.language.cpp.CppLibrary;
 import org.gradle.language.cpp.CppSharedLibrary;
@@ -44,6 +45,7 @@ import org.gradle.nativeplatform.Linkage;
 import org.gradle.nativeplatform.TargetMachineFactory;
 import org.gradle.nativeplatform.platform.internal.Architectures;
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform;
+import org.gradle.nativeplatform.toolchain.internal.PlatformToolProvider;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -138,15 +140,11 @@ public class CppLibraryPlugin implements Plugin<Project> {
                     providers.provider(() -> project.getGroup().toString()), providers.provider(() -> project.getVersion().toString()),
                     variantIdentity -> {
 
-                        ToolChainSelector.Result<CppPlatform> result = null;
-                        try {
-                            result = toolChainSelector.select(CppPlatform.class, new DefaultCppPlatform(variantIdentity.getTargetMachine()));
-                        } catch (GradleException e) {}
+                        ToolChainSelector.Result<CppPlatform> result = toolChainSelector.select(CppPlatform.class, new DefaultCppPlatform(variantIdentity.getTargetMachine()));
+                        PlatformToolProvider provider = result.getPlatformToolProvider();
 
-                        if (result != null) {
-                            System.out.println(String.format("using %s to build: %s", result.getToolChain().getDisplayName(), variantIdentity.getName()));
-
-                            //ToolChainSelector.Result<CppPlatform> result = toolChainSelector.select(CppPlatform.class, new DefaultCppPlatform(variantIdentity.getTargetMachine()));
+                        if (provider.isAvailable()) {
+                            project.getLogger().info(String.format("using %s to build: %s", result.getToolChain().getDisplayName(), variantIdentity.getName()));
 
                             if (variantIdentity.getLinkage().equals(Linkage.SHARED)) {
                                 library.addSharedLibrary(variantIdentity, result.getTargetPlatform(), result.getToolChain(), result.getPlatformToolProvider());
@@ -154,6 +152,11 @@ public class CppLibraryPlugin implements Plugin<Project> {
                                 library.addStaticLibrary(variantIdentity, result.getTargetPlatform(), result.getToolChain(), result.getPlatformToolProvider());
                             }
                         } else {
+
+                            TreeFormatter formatter = new TreeFormatter();
+                            provider.explain(formatter);
+                            project.getLogger().warn(formatter.toString());
+
                             // Known, but not buildable
                             library.getMainPublication().addVariant(variantIdentity);
                         }

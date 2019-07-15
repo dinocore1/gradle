@@ -16,6 +16,7 @@
 
 package org.gradle.language.nativeplatform.internal.toolchains;
 
+import org.gradle.internal.logging.text.DiagnosticsVisitor;
 import org.gradle.nativeplatform.toolchain.internal.NativeToolChainInternal;
 import org.gradle.nativeplatform.toolchain.internal.PlatformToolProvider;
 

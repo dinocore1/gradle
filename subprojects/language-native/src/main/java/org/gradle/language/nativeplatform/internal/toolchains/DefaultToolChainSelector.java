@@ -102,7 +102,7 @@ public class DefaultToolChainSelector implements ToolChainSelector {
     private NativeToolChainInternal getToolChain(NativeLanguage sourceLanguage, NativePlatformInternal targetNativePlatform) {
         NativeToolChainRegistryInternal registry = modelRegistry.realize("toolChains", NativeToolChainRegistryInternal.class);
         NativeToolChainInternal toolChain = registry.getForPlatform(sourceLanguage, targetNativePlatform);
-        toolChain.assertSupported();
+        //toolChain.assertSupported();
 
         return toolChain;
     }

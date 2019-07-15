@@ -175,10 +175,6 @@ public class DefaultNativeToolChainRegistry extends DefaultPolymorphicDomainObje
             return "unavailable";
         }
 
-        @Override
-        public void assertSupported() {
-            // Supported, but unavailable. Nothing to do.
-        }
     }
 
     private static class UnsupportedToolChainDescription extends AbstractUnavailabilityToolChainSearchDescription{
@@ -224,11 +220,5 @@ public class DefaultNativeToolChainRegistry extends DefaultPolymorphicDomainObje
             return "unsupported";
         }
 
-        @Override
-        public void assertSupported() {
-            TreeFormatter formatter = new TreeFormatter();
-            failure.explain(formatter);
-            throw new GradleException(formatter.toString());
-        }
     }
 }
